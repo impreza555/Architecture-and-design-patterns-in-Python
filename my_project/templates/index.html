@@ -1,21 +1,42 @@
 {% extends "base.html" %}
 {% set url = "/" %}
 {% block title %}
-	simplestyle_3
+	simplestyle_3 - a page
 {% endblock %}
 {% block content %}
-    <h1>Welcome to the simplestyle_3 template</h1>
-    <p>This standards compliant, simple, fixed width website template is released as an 'open source' design (under a <a href="http://creativecommons.org/licenses/by/3.0">Creative Commons Attribution 3.0 Licence</a>), which means that you are free to download and use it for anything you want (including modifying and amending it). All I ask is that you leave the 'design from HTML5webtemplates.co.uk' link in the footer of the template, but other than that...</p>
-    <p>This template is written entirely in <strong>HTML5</strong> and <strong>CSS</strong>, and can be validated using the links in the footer.</p>
-    <p>You can view more free HTML5 web templates <a href="http://www.html5webtemplates.co.uk">here</a>.</p>
-    <p>This template is a fully functional 5 page website, with an <a href="examples.html">examples</a> page that gives examples of all the styles available with this design.</p>
-    <h2>Browser Compatibility</h2>
-    <p>This template has been tested in the following browsers:</p>
-    <ul>
-        <li>Internet Explorer 8</li>
-        <li>Internet Explorer 7</li>
-        <li>FireFox 3.5</li>
-        <li>Google Chrome 6</li>
-        <li>Safari 4</li>
-    </ul>
+   <h1>Программы обучения</h1>
+    <p>Курсы в течение года.</p>
+    <p>Расписание действует на: {{date}}</p>
+    <table>
+        <tr class="head">
+            <th></th>
+            <th>Москва</th>
+            <th>Санкт-Петербург</th>
+            <th>Екатеринбург</th>
+        </tr>
+        <tr>
+            <th>Перспектива программирования</th>
+            <td>Сб, 20 февраля 2021<br />11:00 - 14:00</td>
+            <td>Сб, 6 марта 2021<br />11:00 - 14:00</td>
+            <td>Сб, 20 марта 2021<br />11:00 - 14:00</td>
+        </tr>
+        <tr class="even">
+            <th>Программируем на ...</th>
+            <td>Сб, 10 апреля 2021<br />11:00 - 13:00</td>
+            <td>Сб, 1 мая 2021<br />11:00 - 13:00</td>
+            <td>Сб, 8 мая 2021<br />11:00 - 13:00</td>
+        </tr>
+        <tr>
+            <th>Приложения для ...</th>
+            <td>Сб, 26 июня 2021<br />11:00 - 14:00</td>
+            <td>Сб, 3 июля 2021<br />11:00 - 14:00</td>
+            <td>Сб, 10 июля 2021<br />11:00 - 14:00</td>
+        </tr>
+        <tr class="even">
+            <th>WEB для всех</th>
+            <td>Сб, 28 августа 2021<br />11:00 - 16:00</td>
+            <td>Сб, 4 сентября 2021<br />11:00 - 16:00</td>
+            <td>Сб, 11 сентября 2021<br />11:00 - 16:00</td>
+        </tr>
+    </table>
 {% endblock %}

@@ -1,42 +1,26 @@
 {% extends "base.html" %}
 {% set url = "page" %}
 {% block title %}
-	simplestyle_3 - a page
+	simplestyle_3 - another page
 {% endblock %}
 {% block content %}
-   <h1>Программы обучения</h1>
-    <p>Курсы в течение года.</p>
-    <p>Расписание действует на: {{date}}</p>
-    <table>
-        <tr class="head">
-            <th></th>
-            <th>Москва</th>
-            <th>Санкт-Петербург</th>
-            <th>Екатеринбург</th>
-        </tr>
-        <tr>
-            <th>Перспектива программирования</th>
-            <td>Сб, 20 февраля 2021<br />11:00 - 14:00</td>
-            <td>Сб, 6 марта 2021<br />11:00 - 14:00</td>
-            <td>Сб, 20 марта 2021<br />11:00 - 14:00</td>
-        </tr>
-        <tr class="even">
-            <th>Программируем на ...</th>
-            <td>Сб, 10 апреля 2021<br />11:00 - 13:00</td>
-            <td>Сб, 1 мая 2021<br />11:00 - 13:00</td>
-            <td>Сб, 8 мая 2021<br />11:00 - 13:00</td>
-        </tr>
-        <tr>
-            <th>Приложения для ...</th>
-            <td>Сб, 26 июня 2021<br />11:00 - 14:00</td>
-            <td>Сб, 3 июля 2021<br />11:00 - 14:00</td>
-            <td>Сб, 10 июля 2021<br />11:00 - 14:00</td>
-        </tr>
-        <tr class="even">
-            <th>WEB для всех</th>
-            <td>Сб, 28 августа 2021<br />11:00 - 16:00</td>
-            <td>Сб, 4 сентября 2021<br />11:00 - 16:00</td>
-            <td>Сб, 11 сентября 2021<br />11:00 - 16:00</td>
-        </tr>
-    </table>
+    <h1>Создание категории</h1>
+    <form method="post">
+        <div class="form_settings">
+            <p><span>Название категории:</span><input class="contact" type="text" name="name" placeholder="Введите название"></p>
+            <p style="padding-top: 15px"><span>&nbsp;</span><input class="submit" type="submit" name="save_and_return" value="Сохранить" /></p>
+        </div>
+    </form>
+    <h2>Список категорий</h2>
+    <ol>
+        {% for item in objects_list %}
+        <li>
+            {{item.name}} <span>Количество курсов: {{item.course_count()}}</span>
+        </li>
+        {% endfor %}
+    </ol>
+	<ul>
+		<li><a href="/courses-list/">Список курсов</a></li>
+		<li><a href="/create-course/">Создать курс</a></li>
+	</ul>
 {% endblock %}

@@ -2,13 +2,13 @@ from quopri import decodestring
 from geek_framework.requests import GetRequests, PostRequests
 
 
-class PageNotFound404:
-    """
-    класс 404 Page Not Found
-    """
-
-    def __call__(self, request):
-        return '404 WHAT', '404 PAGE Not Found'
+# class PageNotFound404:
+#     """
+#     класс 404 Page Not Found
+#     """
+#
+#     def __call__(self, request):
+#         return '404 WHAT', '404 PAGE Not Found'
 
 
 class Framework:
