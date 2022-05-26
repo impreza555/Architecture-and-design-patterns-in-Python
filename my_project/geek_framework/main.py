@@ -1,14 +1,6 @@
 from quopri import decodestring
 from geek_framework.requests import GetRequests, PostRequests
-
-
-# class PageNotFound404:
-#     """
-#     класс 404 Page Not Found
-#     """
-#
-#     def __call__(self, request):
-#         return '404 WHAT', '404 PAGE Not Found'
+from views import NotFound404
 
 
 class Framework:
@@ -50,7 +42,7 @@ class Framework:
         if path in self.routes_lst:
             view = self.routes_lst[path]
         else:
-            view = PageNotFound404()
+            view = NotFound404()
         for front in self.fronts_lst:
             front(request)
         code, body = view(request)

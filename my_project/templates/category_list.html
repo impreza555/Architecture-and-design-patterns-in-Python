@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% set url = "category_list" %}
+{% block title %}
+	simplestyle_3 - another page
+{% endblock %}
+{% block content %}
+    <h1>Создание категории</h1>
+    <form method="post">
+        <div class="form_settings">
+            <p><span>Название категории:</span><input class="contact" type="text" name="category_name" placeholder="Введите название"></p>
+            <p style="padding-top: 15px"><span>&nbsp;</span><input class="submit" type="submit" name="save_category" value="Сохранить" /></p>
+        </div>
+    </form>
+    <h2>Список категорий</h2>
+    <ol>
+        {% for item in objects_list %}
+        <li>
+            {{item.name}} <span>Количество курсов: {{item.course_count()}}</span>
+            <a href="/courses_list/?id={{item.id}}">Показать курсы</a>
+            <a href="/courses_list/?id={{item.id}}">Создать курс</a>
+        </li>
+        {% endfor %}
+    </ol>
+{% endblock %}

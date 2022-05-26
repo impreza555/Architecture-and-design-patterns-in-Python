@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% set url = "courses_list" %}
+{% block title %}
+	simplestyle_3
+{% endblock %}
+{% block content %}
+    <div>
+        <h1>Создание курса для категории "{{name}}"</h1>
+        <form method="post">
+            <div class="form_settings">
+                <p><span>Название курса:</span><input class="contact" type="text" name="course_name" placeholder="Введите название"></p>
+                <p style="padding-top: 15px"><span>&nbsp;</span><input class="submit" type="submit" name="save_cours" value="Сохранить" /></p>
+            </div>
+        </form>
+    </div>
+    <div>
+        <br>
+        <h2>Список курсов для категории "{{name}}"</h2>
+        <ol>
+            {% for item in objects_list %}
+            <li>
+                {{item.name}} <span><a href="/copy_course/?name={{item.name}}">скопировать</a></span>
+            </li>
+            {% endfor %}
+        </ol>
+    </div>
+{% endblock %}

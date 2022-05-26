@@ -184,6 +184,7 @@ class Engine:
     def create_course(type_, name, category):
         """
         Метод создания курса.
+        :param name: название курса
         :param type_: тип курса
         :param category: категория
         :return: cls - Класс нового курса.
@@ -193,8 +194,8 @@ class Engine:
     def get_course(self, name):
         """
         Метод поиска курса по названию.
-        :param name: название курса
-        :return: объект курса
+        :param name: название курса.
+        :return: объект курса.
         """
         for item in self.courses:
             if item.name == name:

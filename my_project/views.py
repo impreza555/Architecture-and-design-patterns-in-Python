@@ -1,3 +1,5 @@
+from datetime import date
+
 from geek_framework.templator import render
 from patterns.сreational_patterns import Engine, Logger
 
@@ -6,9 +8,7 @@ logger = Logger('main')
 
 
 class NotFound404:
-    """
-    404 Page Not Found view
-    """
+    """404 Page Not Found view."""
 
     def __call__(self, request):
         return '404 WHAT', '404 PAGE Not Found'
@@ -18,49 +18,21 @@ class Index:
     """Index view."""
 
     def __call__(self, request):
-        return '200 OK', render('index.html', date=request.get('date', None))
+        return '200 OK', render('index.html', date=date.today())
 
 
 class Examples:
     """Examples view."""
 
     def __call__(self, request):
-        return '200 OK', render('examples.html', date=request.get('date', None))
+        return '200 OK', render('examples.html', date=date.today())
 
 
 class Contacts:
     """Contacts view."""
 
     def __call__(self, request):
-        return '200 OK', render('contact.html', date=request.get('date', None))
-
-
-class Page:
-    """Page view."""
-
-    def __call__(self, request):
-        return '200 OK', render('page.html', date=request.get('date', None), objects_list=site.categories)
-
-
-# class AnotherPage:
-#     """Another page view."""
-#
-#     def __call__(self, request):
-#         return '200 OK', render('another_page.html', date=request.get('date', None))
-
-
-# контроллер - список курсов
-class CoursesList:
-    def __call__(self, request):
-        logger.log('Список курсов')
-        try:
-            category = site.find_category_by_id(
-                int(request['request_params']['id']))
-            return '200 OK', render('another_page.html',
-                                    objects_list=category.courses,
-                                    name=category.name, id=category.id)
-        except KeyError:
-            return '200 OK', 'No courses have been added yet'
+        return '200 OK', render('contact.html', date=date.today())
 
 
 class CreateCourse:
@@ -72,7 +44,7 @@ class CreateCourse:
             # метод пост
             data = request['data']
 
-            name = data['name']
+            name = data['course_name']
             name = site.decode_value(name)
 
             category = None
@@ -82,21 +54,21 @@ class CreateCourse:
                 course = site.create_course('record', name, category)
                 site.courses.append(course)
 
-            return '200 OK', render('another_page.html',
+            return '200 OK', render('courses_list.html',
                                     objects_list=category.courses,
                                     name=category.name,
                                     id=category.id)
-
         else:
+            logger.log('Список курсов')
             try:
-                self.category_id = int(request['request_params']['id'])
-                category = site.find_category_by_id(int(self.category_id))
-
-                return '200 OK', render('create_course.html',
-                                        name=category.name,
-                                        id=category.id)
+                self.category_id = int(request['data']['id'])
+                category = site.find_category_by_id(
+                    int(request['data']['id']))
+                return '200 OK', render('courses_list.html',
+                                        objects_list=category.courses,
+                                        name=category.name, id=category.id)
             except KeyError:
-                return '200 OK', 'No categories have been added yet'
+                return '200 OK', 'No courses have been added yet'
 
 
 class CreateCategory:
@@ -109,7 +81,7 @@ class CreateCategory:
 
             data = request['data']
 
-            name = data['name']
+            name = data['category_name']
             name = site.decode_value(name)
 
             category_id = data.get('category_id')
@@ -122,27 +94,18 @@ class CreateCategory:
 
             site.categories.append(new_category)
 
-            return '200 OK', render('page.html', objects_list=site.categories)
+            return '200 OK', render('category_list.html', objects_list=site.categories)
         else:
-            categories = site.categories
-            return '200 OK', render('page.html',
-                                    categories=categories)
-
-
-class CategoryList:
-    """Category list view."""
-
-    def __call__(self, request):
-        logger.log('Список категорий')
-        return '200 OK', render('page.html',
-                                objects_list=site.categories)
+            logger.log('Список категорий')
+            return '200 OK', render('category_list.html',
+                                    objects_list=site.categories)
 
 
 class CopyCourse:
     """Copy course view."""
 
     def __call__(self, request):
-        request_params = request['request_params']
+        request_params = request['data']
 
         try:
             name = request_params['name']
@@ -154,7 +117,7 @@ class CopyCourse:
                 new_course.name = new_name
                 site.courses.append(new_course)
 
-            return '200 OK', render('another_page.html',
+            return '200 OK', render('courses_list.html',
                                     objects_list=site.courses,
                                     name=new_course.category.name)
         except KeyError:
