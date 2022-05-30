@@ -62,3 +62,43 @@ class Framework:
             val_decode_str = decodestring(val).decode('UTF-8')
             new_data[key] = val_decode_str
         return new_data
+
+
+class DebugApplication(Framework):
+    """
+    Логирующий класс, для каждого запроса
+    выводит информацию (тип запроса и параметры) в консоль.
+    """
+
+    def __init__(self, routes_obj, fronts_obj):
+        """
+        Инициализация логирующего класса
+        :param routes_obj: объект маршрутов
+        :param fronts_obj: объект фронт контроллера
+        """
+        self.application = Framework(routes_obj, fronts_obj)
+        super().__init__(routes_obj, fronts_obj)
+
+    def __call__(self, env, start_response):
+        print('DEBUG MODE')
+        print(env)
+        return self.application(env, start_response)
+
+
+class FakeApplication(Framework):
+    """
+    Фейковый класс (на все запросы пользователя отвечает: 200 OK, Hello from Fake).
+    """
+
+    def __init__(self, routes_obj, fronts_obj):
+        """
+        Инициализация фейкового класса
+        :param routes_obj: объект маршрутов
+        :param fronts_obj: объект фронт контроллера
+        """
+        self.application = Framework(routes_obj, fronts_obj)
+        super().__init__(routes_obj, fronts_obj)
+
+    def __call__(self, env, start_response):
+        start_response('200 OK', [('Content-Type', 'text/html')])
+        return [b'Hello from Fake']

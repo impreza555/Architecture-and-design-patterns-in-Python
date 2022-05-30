@@ -2,9 +2,11 @@ from datetime import date
 
 from geek_framework.templator import render
 from patterns.сreational_patterns import Engine, Logger
+from patterns.structural_patterns import AppRoute, Debug
 
 site = Engine()
 logger = Logger('main')
+routes = {}
 
 
 class NotFound404:
@@ -14,6 +16,7 @@ class NotFound404:
         return '404 WHAT', '404 PAGE Not Found'
 
 
+@AppRoute(routes=routes, url='/')
 class Index:
     """Index view."""
 
@@ -21,6 +24,7 @@ class Index:
         return '200 OK', render('index.html', date=date.today())
 
 
+@AppRoute(routes=routes, url='/examples/')
 class Examples:
     """Examples view."""
 
@@ -28,6 +32,7 @@ class Examples:
         return '200 OK', render('examples.html', date=date.today())
 
 
+@AppRoute(routes=routes, url='/contacts/')
 class Contacts:
     """Contacts view."""
 
@@ -35,6 +40,7 @@ class Contacts:
         return '200 OK', render('contact.html', date=date.today())
 
 
+@AppRoute(routes=routes, url='/courses_list/')
 class CreateCourse:
     """Create course view."""
     category_id = -1
@@ -71,6 +77,7 @@ class CreateCourse:
                 return '200 OK', 'No courses have been added yet'
 
 
+@AppRoute(routes=routes, url='/category_list/')
 class CreateCategory:
     """Create category view."""
 
@@ -101,6 +108,7 @@ class CreateCategory:
                                     objects_list=site.categories)
 
 
+@AppRoute(routes=routes, url='/copy_course/')
 class CopyCourse:
     """Copy course view."""
 
