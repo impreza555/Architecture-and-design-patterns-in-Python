@@ -1,64 +1,60 @@
 from copy import deepcopy
 from quopri import decodestring
+from patterns.behavioral_patterns import FileWriter, Subject
 
 
 class User:
-    """
-    Абстрактный класс пользователя.
-    """
-    pass
+    """Абстрактный класс пользователя."""
+
+    def __init__(self, name):
+        """Инициализация пользователя."""
+        self.name = name
 
 
 class Teacher(User):
-    """
-    Класс учителя.
-    """
+    """Класс пользователя - преподавателя."""
     pass
 
 
 class Student(User):
-    """
-    Класс студента.
-    """
-    pass
+    """Класс пользователя - студента."""
+
+    def __init__(self, name):
+        """Инициализация пользователя студента."""
+        self.courses = []
+        super().__init__(name)
 
 
 class UserFactory:
-    """
-    Фабрика пользователей.
-    """
+    """Фабрика пользователей - порождающий паттерн Абстрактная фабрика."""
     types = {
         'student': Student,
         'teacher': Teacher
     }
 
     @classmethod
-    def create(cls, type_):
+    def create(cls, type_, name):
         """
         Создание пользователя.
         :param type_:
         :return: cls - Класс нового пользователя.
         """
-        return cls.types[type_]()
+        return cls.types[type_](name)
 
 
 class CoursePrototype:
-    """
-    Прототип курсов обучения.
-    """
+    """Прототип курсов обучения - порождающий паттерн Прототип."""
 
     def clone(self):
         """
-        Клонирование прототипа.
+        Метод клонирование объекта курса.
         :return: cls - Класс курса.
         """
         return deepcopy(self)
 
 
-class Course(CoursePrototype):
-    """
-    Курс обучения.
-    """
+class Course(CoursePrototype, Subject):
+    """Класс - курс обучения."""
 
     def __init__(self, name, category):
         """
@@ -69,26 +65,32 @@ class Course(CoursePrototype):
         self.name = name
         self.category = category
         self.category.courses.append(self)
+        self.students = []
+        super().__init__()
+
+    def __getitem__(self, item):
+        """Метод получения объекта студента."""
+        return self.students[item]
+
+    def add_student(self, student: Student):
+        """Метод добавления студента на курс."""
+        self.students.append(student)
+        student.courses.append(self)
+        self.notify()
 
 
 class InteractiveCourse(Course):
-    """
-    Интерактивный курс обучения.
-    """
+    """Интерактивный курс обучения."""
     pass
 
 
 class RecordCourse(Course):
-    """
-    Курс обучения в записи.
-    """
+    """Курс обучения в записи."""
     pass
 
 
 class CourseFactory:
-    """
-    Фабрика курсов.
-    """
+    """Фабрика курсов - порождающий паттерн Абстрактная фабрика."""
     types = {
         'interactive': InteractiveCourse,
         'record': RecordCourse
@@ -107,9 +109,7 @@ class CourseFactory:
 
 
 class Category:
-    """
-    Категория курсов.
-    """
+    """ Класс - категория курсов."""
     auto_id = 0
 
     def __init__(self, name, category):
@@ -126,7 +126,7 @@ class Category:
 
     def course_count(self):
         """
-        Количество курсов в категории.
+        Метод подсчёта количества курсов в категории.
         :return: int - количество курсов
         """
         result = len(self.courses)
@@ -136,9 +136,7 @@ class Category:
 
 
 class Engine:
-    """
-    Движок фреймворка
-    """
+    """Движок фреймворка."""
 
     def __init__(self):
         """
@@ -150,13 +148,14 @@ class Engine:
         self.categories = []
 
     @staticmethod
-    def create_user(type_):
+    def create_user(type_, name):
         """
         Метод создания пользователя.
         :param type_: тип пользователя
+        :param name: имя пользователя
         :return: cls - Класс нового пользователя.
         """
-        return UserFactory.create(type_)
+        return UserFactory.create(type_, name)
 
     @staticmethod
     def create_category(name, category=None):
@@ -202,6 +201,16 @@ class Engine:
                 return item
         return None
 
+    def get_student(self, name) -> Student:
+        """
+        Метод получения объекта студента по имени.
+        :param name: str - имя студента
+        :return: объект студента
+        """
+        for item in self.students:
+            if item.name == name:
+                return item
+
     @staticmethod
     def decode_value(val):
         """
@@ -215,9 +224,7 @@ class Engine:
 
 
 class SingletonByName(type):
-    """
-    Класс порождающий паттерн Singleton.
-    """
+    """Класс порождающий паттерн Singleton."""
 
     def __init__(cls, name, bases, attrs, **kwargs):
         """
@@ -250,22 +257,21 @@ class SingletonByName(type):
 
 
 class Logger(metaclass=SingletonByName):
-    """
-    Класс логгера.
-    """
+    """Класс логгера."""
 
-    def __init__(self, name):
+    def __init__(self, name, writer=FileWriter()):
         """
         Конструктор класса.
         :param name: имя логгера
         """
         self.name = name
+        self.writer = writer
 
-    @staticmethod
-    def log(text):
+    def log(self, text):
         """
-        метод печати лога.
+        Метод логгирования.
         :param text: str - текст лога
         :return: None
         """
-        print('log--->', text)
+        text = f'log---> {text}'
+        self.writer.write(text)

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% set url = "student_list" %}
+{% block title %}
+	simplestyle_3 - examples
+{% endblock %}
+{% block content %}
+    <li>
+        <a href="/student_list/">Список студентов</a>
+    </li>
+    <h1>Добавление студента на курс</h1>
+    <form method="post">
+        <div class="form_settings">
+            <p>
+                <span>Список курсов</span>
+                <select size="2" name="course_name">
+                    {% for item in courses %}
+                        <option value="{{item.name}}">{{item.name}}</option>
+                    {% endfor %}
+                </select>
+            </p>
+            <p>
+                <span>Список студентов</span>
+                <select size="2" name="student_name">
+                    {% for item in students %}
+                        <option value="{{item.name}}">{{item.name}}</option>
+                    {% endfor %}
+                </select>
+            </p>
+            <p style="padding-top: 15px"><span>&nbsp;</span><input class="submit" type="submit" name="add_student_to_course" value="Записать" /></p>
+        </div>
+    </form>
+{% endblock %}

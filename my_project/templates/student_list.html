@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% set url = "student_list" %}
+{% block title %}
+	simplestyle_3 - examples
+{% endblock %}
+{% block content %}
+    <h1>Создание студента</h1>
+    <form method="post">
+        <div class="form_settings">
+            <p><span>Студент: </span>
+            <input type="text" name="student_name" placeholder="Имя">
+            </p>
+            <p style="padding-top: 15px"><span>&nbsp;</span><input class="submit" type="submit" value="Сохранить" /></p>
+        </div>
+    </form>
+    <h2>Список студентов</h2>
+    {% for item in objects_list %}
+    <li>
+        {{item.name}}
+        {% for course in item.courses %}
+            {{course.name}}
+        {% endfor %}
+    </li>
+    {% endfor %}
+    <li>
+        <a href="/add_student/">Добавить студента на курс</a>
+    </li>
+
+{% endblock %}
