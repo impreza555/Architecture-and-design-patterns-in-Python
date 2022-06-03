@@ -19,7 +19,7 @@
         <ol>
             {% for item in objects_list %}
             <li>
-                {{item.name}} <span><a href="/copy_course/?name={{item.name}}">скопировать</a></span>
+                {{item.name}} <span><a href="/copy_course?name={{item.name}}">скопировать</a></span>
             </li>
             {% endfor %}
         </ol>
