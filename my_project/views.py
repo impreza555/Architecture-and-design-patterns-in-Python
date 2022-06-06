@@ -1,20 +1,24 @@
 from datetime import date
 
 from geek_framework.templator import render
-from patterns.сreational_patterns import Engine, Logger
+from patterns.сreational_patterns import Engine, Logger, MapperRegistry
 from patterns.structural_patterns import AppRoute, Debug
 from patterns.behavioral_patterns import EmailNotifier, SmsNotifier, ListView, CreateView, BaseSerializer
+from patterns.architectural_patterns import UnitOfWork
 
 site = Engine()
 logger = Logger('main')
 email_notifier = EmailNotifier()
 sms_notifier = SmsNotifier()
+UnitOfWork.new_current()
+UnitOfWork.get_current().set_mapper_registry(MapperRegistry)
 routes = {}
 
 
 class NotFound404:
     """404 Page Not Found view."""
 
+    @Debug(name='NotFound404')
     def __call__(self, request):
         return '404 WHAT', '404 PAGE Not Found'
 
@@ -23,22 +27,16 @@ class NotFound404:
 class Index:
     """Index view."""
 
+    @Debug(name='Index')
     def __call__(self, request):
         return '200 OK', render('index.html', date=date.today())
-
-
-@AppRoute(routes=routes, url='/examples/')
-class Examples:
-    """Examples view."""
-
-    def __call__(self, request):
-        return '200 OK', render('examples.html', date=date.today())
 
 
 @AppRoute(routes=routes, url='/contacts/')
 class Contacts:
     """Contacts view."""
 
+    @Debug(name='Contacts')
     def __call__(self, request):
         return '200 OK', render('contact.html', date=date.today())
 
@@ -48,6 +46,7 @@ class CreateCourse:
     """Create course view."""
     category_id = -1
 
+    @Debug(name='CreateCourse')
     def __call__(self, request):
         if request['method'] == 'POST':
             data = request['data']
@@ -86,6 +85,7 @@ class CreateCourse:
 class CreateCategory:
     """Create category view."""
 
+    @Debug(name='CreateCategory')
     def __call__(self, request):
         if request['method'] == 'POST':
             data = request['data']
@@ -113,6 +113,7 @@ class CreateCategory:
 class CopyCourse:
     """Copy course view."""
 
+    @Debug(name='CopyCourse')
     def __call__(self, request):
         request_params = request['data']
         try:
@@ -135,8 +136,12 @@ class CopyCourse:
 @AppRoute(routes=routes, url='/student_list/')
 class StudentCreateView(ListView, CreateView):
     """Student list and create view."""
-    queryset = site.students
+    # queryset = site.students
     template_name = 'student_list.html'
+
+    def get_queryset(self):
+        mapper = MapperRegistry.get_current_mapper('student')
+        return mapper.all()
 
     def create_obj(self, data: dict):
         """Create student object."""
@@ -144,6 +149,8 @@ class StudentCreateView(ListView, CreateView):
         name = site.decode_value(name)
         new_obj = site.create_user('student', name)
         site.students.append(new_obj)
+        new_obj.mark_new()
+        UnitOfWork.get_current().commit()
 
 
 @AppRoute(routes=routes, url='/add_student/')

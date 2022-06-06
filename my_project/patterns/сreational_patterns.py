@@ -1,6 +1,10 @@
 from copy import deepcopy
 from quopri import decodestring
+from sqlite3 import connect
 from patterns.behavioral_patterns import FileWriter, Subject
+from patterns.architectural_patterns import DomainObject
+
+connection = connect('my_project.db')
 
 
 class User:
@@ -16,7 +20,7 @@ class Teacher(User):
     pass
 
 
-class Student(User):
+class Student(User, DomainObject):
     """Класс пользователя - студента."""
 
     def __init__(self, name):
@@ -275,3 +279,140 @@ class Logger(metaclass=SingletonByName):
         """
         text = f'log---> {text}'
         self.writer.write(text)
+
+
+class StudentMapper:
+    """Маппер модели студент."""
+
+    def __init__(self, connection):
+        """
+        Инициализация маппера.
+        :param connection: объект подключения к базе данных
+        """
+        self.connection = connection
+        self.cursor = connection.cursor()
+        self.tablename = 'student'
+
+    def all(self):
+        """
+        Метод запроса всех данных из таблицы.
+        :return: list - список объектов
+        """
+        statement = f'SELECT * from {self.tablename}'
+        self.cursor.execute(statement)
+        result = []
+        for item in self.cursor.fetchall():
+            id, name = item
+            student = Student(name)
+            student.id = id
+            result.append(student)
+        return result
+
+    def find_by_id(self, id):
+        """
+        Метод получения объекта из таблицы по id.
+        :param id: int - id объекта
+        :return: объект студента
+        """
+        statement = f"SELECT id, name FROM {self.tablename} WHERE id=?"
+        self.cursor.execute(statement, (id,))
+        result = self.cursor.fetchone()
+        if result:
+            return Student(*result)
+        else:
+            raise RecordNotFoundException(f'record with id={id} not found')
+
+    def insert(self, obj):
+        """
+        Метод вставки объекта в таблицу.
+        :param obj: объект студента
+        """
+        statement = f"INSERT INTO {self.tablename} (name) VALUES (?)"
+        self.cursor.execute(statement, (obj.name,))
+        try:
+            self.connection.commit()
+        except Exception as e:
+            raise DbCommitException(e.args)
+
+    def update(self, obj):
+        """
+        Метод обновления объекта в таблице.
+        :param obj: объект студента
+        """
+        statement = f"UPDATE {self.tablename} SET name=? WHERE id=?"
+
+        self.cursor.execute(statement, (obj.name, obj.id))
+        try:
+            self.connection.commit()
+        except Exception as e:
+            raise DbUpdateException(e.args)
+
+    def delete(self, obj):
+        """
+        Метод удаления объекта из таблицы.
+        :param obj: объект студента
+        """
+        statement = f"DELETE FROM {self.tablename} WHERE id=?"
+        self.cursor.execute(statement, (obj.id,))
+        try:
+            self.connection.commit()
+        except Exception as e:
+            raise DbDeleteException(e.args)
+
+
+class MapperRegistry:
+    """Реестр мапперов - системный паттерн Data Mapper."""
+    mappers = {
+        'student': StudentMapper,
+    }
+
+    @staticmethod
+    def get_mapper(obj):
+        """
+        Метод получения маппера по объекту.
+        :param obj: объект
+        :return: объект маппера
+        """
+        if isinstance(obj, Student):
+            return StudentMapper(connection)
+
+    @staticmethod
+    def get_current_mapper(name):
+        """
+        Метод получения текущего маппера по имени.
+        :param name: имя маппера
+        :return: объект текущего маппера
+        """
+        return MapperRegistry.mappers[name](connection)
+
+
+class DbCommitException(Exception):
+    """Класс - исключение при выполнении коммита базы данных."""
+
+    def __init__(self, message):
+        """Метод инициализации исключения."""
+        super().__init__(f'Db commit error: {message}')
+
+
+class DbUpdateException(Exception):
+    """Класс - исключение при выполнении обновления базы данных."""
+
+    def __init__(self, message):
+        """Метод инициализации исключения."""
+        super().__init__(f'Db update error: {message}')
+
+
+class DbDeleteException(Exception):
+    """Класс - исключение при выполнении удаления базы данных."""
+
+    def __init__(self, message):
+        """Метод инициализации исключения."""
+        super().__init__(f'Db delete error: {message}')
+
+
+class RecordNotFoundException(Exception):
+    """Класс - исключение при не найденном объекте в базе данных."""
+
+    def __init__(self, message):
+        """Метод инициализации исключения."""
+        super().__init__(f'Record not found: {message}')

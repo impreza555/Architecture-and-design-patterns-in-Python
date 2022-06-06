@@ -1,5 +1,5 @@
 from datetime import date
-from views import Index, Examples, Contacts, CreateCategory, CopyCourse, CreateCourse
+from views import Index, Contacts, CreateCategory, CopyCourse, CreateCourse
 
 
 def secret_front(request):
